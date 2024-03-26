@@ -8,3 +8,10 @@ spring:
     username: root
     password: Inaba
     driver-class-name: com.mysql.cj.jdbc.Driver
+  security:
+    user:
+      name: admin
+      password: 123
+      roles:
+        - admin
+        - user
