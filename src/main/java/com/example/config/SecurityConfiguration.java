@@ -1,8 +1,10 @@
 package com.example.config;
 
 import com.example.entity.RestBean;
+import com.example.entity.dto.Account;
 import com.example.entity.vo.response.AuthorizeVO;
 import com.example.filter.JwtAuthorizeFilter;
+import com.example.utils.HostHolder;
 import com.example.utils.JwtUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
@@ -31,6 +33,9 @@ public class SecurityConfiguration {
 
     @Resource
     JwtAuthorizeFilter jwtAuthorizeFilter;
+
+    @Resource
+    HostHolder hostHolder;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity security) throws Exception {
@@ -63,10 +68,11 @@ public class SecurityConfiguration {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         response.setContentType("application/josn;charset=utf-8");
         User user = (User) authentication.getPrincipal();
-        String token = utils.createJwt(user, 1, "admin");
+        Account account = hostHolder.getAccount();
+        String token = utils.createJwt(user, account.getId(), account.getUsername());
         AuthorizeVO vo = AuthorizeVO.builder()
-                        .username("admin")
-                        .role("admin")
+                        .username(account.getUsername())
+                        .role(account.getRole())
                         .token(token)
                         .expire(utils.expireTime())
                         .build();
@@ -88,6 +94,12 @@ public class SecurityConfiguration {
     }
 
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-
+        response.setContentType("application/josn;charset=utf-8");
+        String authorization = request.getHeader("Authorization");
+        if (utils.invalidataJwt(authorization)) {
+            response.getWriter().write(RestBean.success(null, "退出成功").asJosnString());
+        } else {
+            response.getWriter().write(RestBean.failure(400, "退出失败").asJosnString());
+        }
     }
 }
