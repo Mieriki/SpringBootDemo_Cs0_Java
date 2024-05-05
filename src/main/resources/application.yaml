@@ -16,6 +16,29 @@ spring:
       expire: 7
   web:
     cors:
-      origin: http://localhost:3000, sad
+      origin: http://localhost:3000
       header: Authorization, Content-Type
       method: GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE, PATCH
+  mail:
+    host: smtp.163.com
+    username: mieriki@163.com
+    password: ABQGQKTLKJEQUYPJ
+    verify:
+      # 邮件验证码失效时间 / 分钟
+      timeout: 15
+      # 验证码请求间隔 / 秒
+      limit: 60
+      # 验证码字符集
+      char-set: 1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ
+  rabbitmq:
+    addresses: localhost
+    username: Inaba
+    password: Inaba
+    virtual-host: /
+  flow:
+    # 标记时间 / 秒
+    mark-time: 3
+    # 最大允许请求数 / 秒
+    max-number: 20
+    # 封禁时间 / 秒
+    prohibition-time: 30
